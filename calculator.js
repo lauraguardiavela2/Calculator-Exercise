@@ -1,3 +1,19 @@
+const operators = {
+    "+": (a, b) => a + b,
+    "-": (a, b) => a - b,
+    "x": (a, b) => a * b,
+    "%": (a, b) => {
+        if (b === 0) {
+            throw new Error("Cannot divide by zero");
+        }
+        return a / b;
+    }
+};
+
+function calculate(prev, next, operator) {
+    return operators[operator](prev, next);
+}
+
 var operation = {
     operationList:[],
     currentNumber: "",
@@ -7,39 +23,37 @@ var operation = {
         this.currentNumber = "";
     },
     execute: function() {
-
-        // Multiply and divide first
-        let prioritizedList = [];
-        for (let i = 0; i < this.operationList.length; i++) {
+        // First pass: resolve multiplication and division
+        let firstPass = [];
+        let i = 0;
+        
+        while (i < this.operationList.length) {
+            const current = this.operationList[i];
             
-            let item = this.operationList[i];
-            if (item === "x" || item === "%") {
-                let prevNumber = parseFloat(prioritizedList.pop());
-                let nextNumber = parseFloat(this.operationList[++i]);
-    
-                if (item === "x") { prioritizedList.push(prevNumber * nextNumber);} 
-                else if (item === "%") {
-                    if (nextNumber === 0) { return "Error: Division by zero"; }
-                    prioritizedList.push(prevNumber / nextNumber);
-                }
-            } else { prioritizedList.push(item); }
+            // If the operation is multiplication (x) or division (%), execute it immediately
+            if (current === "x" || current === "%") {
+            const prevNumber = parseFloat(firstPass.pop());
+            const nextNumber = parseFloat(this.operationList[i + 1]);
+            firstPass.push(calculate(prevNumber, nextNumber, current));
+            i += 2;  // Skip to the next element after the operation
+
+            } else {
+                // If the operation is not high priority, just add it to the list
+                firstPass.push(current);
+                i++;
+            }
         }
-    
-        // Sum and minus
-        let result = 0;
-        let currentOperator = "+";
-    
-        for (let i = 0; i < prioritizedList.length; i++) {
-            let item = prioritizedList[i];
-    
-            if (!isNaN(item)) {
-                let number = parseFloat(item);
-                if (currentOperator === "+") { result += number; } 
-                else if (currentOperator === "-") { result -= number;}
-            } else { currentOperator = item; }
+
+        // Second pass: resolve addition and subtraction
+        let result = parseFloat(firstPass[0]);
+        for (let i = 1; i < firstPass.length; i += 2) {
+            const operator = firstPass[i];
+            const nextNumber = parseFloat(firstPass[i + 1]);
+            result = calculate(result, nextNumber, operator);
         }
-        console.log("result: " + result);
+
         return result;
+
     }
     
 }
