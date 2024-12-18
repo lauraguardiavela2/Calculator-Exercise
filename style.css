@@ -16,6 +16,12 @@ h1{
     font-size: 35px;
     font-weight:lighter;
 }
+.default-button:hover{
+    background-color: #92a8b6;
+}
+.default-button:active{
+    background-color: #565e63;
+}
 .number{
     background-color: #AED1E6;
 }
