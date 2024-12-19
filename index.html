@@ -13,28 +13,31 @@
     </header>
     <main>
         <div class="calculator">
-            <div class="default-button results-box"></div>
+            <div class="results-box"></div>
             
-            <button class="default-button delete-clean clean" onclick="handleCleanClick()">C</button> 
-            <button class="default-button delete-clean delete" onclick="handleDeleteClick()">←</button>
+            <div class="buttons-container" onclick="handleButton(event.target.innerText)">
+                <button class="default-button delete-clean clean">C</button> 
+                <button class="default-button delete-clean delete">←</button>
 
-            <button class="default-button operator divide" onclick="handleOperatorClick(event)">%</button>
-            <button class="default-button operator multiply" onclick="handleOperatorClick(event)">x</button>
-            <button class="default-button operator minus" onclick="handleOperatorClick(event)">-</button>
-            <button class="default-button operator plus" onclick="handleOperatorClick(event)">+</button>
-            <button class="default-button equal" onclick="handleEqualClick()">=</button>
+                <button class="default-button operator divide">%</button>
+                <button class="default-button operator multiply">x</button>
+                <button class="default-button operator minus">-</button>
+                <button class="default-button operator plus">+</button>
+                <button class="default-button equal">=</button>
 
-            <button class="default-button number" onclick="handleNumberClick(event)">7</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">8</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">9</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">4</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">5</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">6</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">1</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">2</button>
-            <button class="default-button number" onclick="handleNumberClick(event)">3</button>
+                <button class="default-button number">7</button>
+                <button class="default-button number">8</button>
+                <button class="default-button number">9</button>
+                <button class="default-button number">4</button>
+                <button class="default-button number">5</button>
+                <button class="default-button number">6</button>
+                <button class="default-button number">1</button>
+                <button class="default-button number">2</button>
+                <button class="default-button number">3</button>
 
-            <button class="default-button number zero">0</button>
+                <button class="default-button number zero">0</button>
+            </div>
+
         </div>
     </main>
     <script src="./calculator.js"></script>

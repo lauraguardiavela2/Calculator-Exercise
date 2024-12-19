@@ -1,95 +1,80 @@
-const operators = {
-    "+": (a, b) => a + b,
-    "-": (a, b) => a - b,
-    "x": (a, b) => a * b,
-    "%": (a, b) => {
-        if (b === 0) {
-            throw new Error("Cannot divide by zero");
+
+const resultsBox = document.querySelector('.results-box');
+
+// Store the operation
+let currentInput = '';
+
+function updateScreen(value) {
+    resultsBox.innerText = value || '0'; // "0" if empty
+}
+
+// Main function to handle button clicks
+function handleButton(value) {
+    if (!isNaN(value) || value === '.') {
+        // If it's a number or a decimal point, add it to the current input
+        currentInput += value;
+    } else if (['+', '-', 'x', '%'].includes(value)) {
+        // If it's an operator, add it with spaces for separation
+        currentInput += ` ${value} `;
+    } else if (value === 'C') {
+        // Clear all input
+        currentInput = '';
+    } else if (value === '←') {
+        // Remove the last character
+        currentInput = currentInput.trim().slice(0, -1);
+    } else if (value === '=') {
+        // Evaluate the operation
+        try {
+            const result = evaluateExpression(currentInput);
+            currentInput = result.toString();
+        } catch {
+            currentInput = 'Error';
         }
-        return a / b;
     }
-};
 
-function calculate(prev, next, operator) {
-    return operators[operator](prev, next);
+    // Update the screen after each action
+    updateScreen(currentInput);
 }
 
-var operation = {
-    operationList:[],
-    currentNumber: "",
+// Evaluate the expression with operator precedence
+function evaluateExpression(expression) {
+    const tokens = expression.split(' ');
 
-    reset: function (){
-        this.operationList = [];
-        this.currentNumber = "";
-    },
-    execute: function() {
-        // First pass: resolve multiplication and division
-        let firstPass = [];
-        let i = 0;
-        
-        while (i < this.operationList.length) {
-            const current = this.operationList[i];
-            
-            // If the operation is multiplication (x) or division (%), execute it immediately
-            if (current === "x" || current === "%") {
-            const prevNumber = parseFloat(firstPass.pop());
-            const nextNumber = parseFloat(this.operationList[i + 1]);
-            firstPass.push(calculate(prevNumber, nextNumber, current));
-            i += 2;  // Skip to the next element after the operation
+    // Mantain the result step by step
+    let stack = [];
 
-            } else {
-                // If the operation is not high priority, just add it to the list
-                firstPass.push(current);
-                i++;
-            }
+    // Process first * and /
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+
+        if (token === 'x') {
+            const prev = stack.pop();
+            const next = parseFloat(tokens[++i]);
+            stack.push(prev * next);
+        } else if (token === '%') {
+            const prev = stack.pop();
+            const next = parseFloat(tokens[++i]);
+            stack.push(prev / next);
+        } else {
+            // Add numbers and other operators to stack
+            stack.push(token === '+' || token === '-' ? token : parseFloat(token));
         }
+    }
 
-        // Second pass: resolve addition and subtraction
-        let result = parseFloat(firstPass[0]);
-        for (let i = 1; i < firstPass.length; i += 2) {
-            const operator = firstPass[i];
-            const nextNumber = parseFloat(firstPass[i + 1]);
-            result = calculate(result, nextNumber, operator);
+    // Then process + and -
+    let result = stack[0];
+    for (let i = 1; i < stack.length; i += 2) {
+        const operator = stack[i];
+        const next = stack[i + 1];
+
+        if (operator === '+') {
+            result += next;
+        } else if (operator === '-') {
+            result -= next;
         }
-
-        return result;
-
     }
-    
-}
-function handleNumberClick(event) {
-    operation.currentNumber += event.target.innerText;
-    paragraph.innerText = operation.currentNumber;
+
+    return result;
 }
 
-function handleOperatorClick(event) {
-    if (operation.currentNumber === "") return;
-    var currentOperator = event.target.innerText;
-    operation.operationList.push(operation.currentNumber);
-    operation.operationList.push(currentOperator);
-    operation.currentNumber = "";
-    paragraph.innerText = currentOperator;
-}
-
-function handleEqualClick() {
-    operation.operationList.push(operation.currentNumber);
-    const result = operation.execute();
-    paragraph.innerText = result.toString();
-    operation.reset();
-}
-
-function handleCleanClick() {
-    operation.reset();
-    paragraph.innerText = "";
-}
-
-function handleDeleteClick() {
-    if (operation.currentNumber !== "") {
-        operation.currentNumber = operation.currentNumber.slice(0, -1);
-        paragraph.innerText = operation.currentNumber;
-    } else if (operation.operationList.length > 0) {
-        operation.operationList.pop();
-        paragraph.innerText = operation.operationList.length > 0 ? operation.operationList[operation.operationList.length - 1] : "";
-    }
-}
-const paragraph = document.querySelector(".results-box");
+updateScreen('');

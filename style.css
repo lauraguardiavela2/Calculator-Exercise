@@ -37,6 +37,11 @@ h1{
     padding-right: 40px;
     grid-area: result;
     color: white;
+    line-height:100px;
+    font-size: large;
+    font-family:'Roboto',sans-serif;
+    font-size: 35px;
+    font-weight:lighter;
 }
 .calculator{
     display: grid;
@@ -51,7 +56,9 @@ h1{
     grid-template-rows: 100px 100px 100px 100px;
     justify-content: center;
 }
-
+.buttons-container {
+    display: contents;
+}
 .zero{
     grid-area: zero;
 }
